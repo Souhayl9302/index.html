@@ -1,0 +1,488 @@
+<html><head><base href="https://websim.ai/" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pro Game Souha</title>
+<style>
+:root {
+  --primary: #ffffff;
+  --secondary: #66c0f4;
+  --accent: #f5f5f5;
+  --text: #2b2b2b;
+  --success: #4CAF50;
+  --steam: #1b2838;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--primary);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.header {
+  background: linear-gradient(45deg, var(--steam), var(--secondary));
+  padding: 2rem 1rem;
+  text-align: center;
+  border-bottom: 3px solid var(--secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  color: var(--secondary);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.account-card {
+  background: var(--accent);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid rgba(102, 192, 244, 0.2);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.account-value {
+  background: rgba(0,0,0,0.05);
+  padding: 0.8rem;
+  border-radius: 8px;
+  word-break: break-all;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.account-label {
+  color: var(--steam);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.copy-btn, .steam-btn {
+  background: var(--secondary);
+  color: var(--primary);
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.steam-btn {
+  background: linear-gradient(45deg, var(--steam), #2a475e);
+  color: var(--primary);
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 1rem;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.steam-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255,255,255,0.1), transparent);
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+}
+
+.steam-btn:hover::before {
+  transform: translateY(0);
+}
+
+.steam-btn svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+}
+
+.copy-btn:hover, .steam-btn:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.copy-btn:active, .steam-btn:active {
+  transform: scale(0.98);
+}
+
+.success-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  display: none;
+  animation: slideIn 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.refresh-btn {
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin: 2rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: #45a049;
+  transform: scale(1.05);
+}
+
+.games-list {
+  max-height: 100px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--accent);
+}
+
+.games-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.games-list::-webkit-scrollbar-track {
+  background: var(--accent);
+}
+
+.games-list::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.8rem;
+  }
+  
+  .accounts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .account-card {
+    padding: 1.2rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎮 Pro Game Souha</h1>
+</div>
+
+<div class="container">
+  <button class="refresh-btn" onclick="refreshAccounts()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+    </svg>
+    تحديث الحسابات
+  </button>
+  
+  <div class="accounts-grid" id="accountsGrid">
+  </div>
+</div>
+
+<div class="success-message" id="successMessage">
+  تم نسخ معلومات الحساب بنجاح! ✓
+</div>
+
+<script>
+const steamAccounts = [
+  {
+    username: "minjunseo6",
+    password: "nuKjYCsE",
+    email: "",
+    games: ["Resident Evil 2", "Resident Evil 3", "ARK: Survival Evolved", "Grand Theft Auto V", "TEKKEN 7", "NARUTO TO BORUTO: SHINOBI STRIKER", "Don't Starve Together", "Resident Evil Revelations 2", "Manhunt", "RESIDENT EVIL RESISTANCE", "Biped"]
+  },
+  {
+    username: "eoldx834",
+    password: "chengyu88881",
+    email: "",
+    games: ["Assassin's Creed Odyssey"]
+  },
+  {
+    username: "bobbyross33",
+    password: "Lbozo1234",
+    email: "",
+    games: ["XCOM 2"]
+  },
+  {
+    username: "maksim171219999",
+    password: "159753vvvv",
+    email: "",
+    games: ["Euro Truck Simulator 2"]
+  },
+  {
+    username: "argentinazxcz",
+    password: "Trial0921",
+    email: "",
+    games: ["Far Cry 6"]
+  },
+  {
+    username: "iklaonoi",
+    password: "Passw0rd1994",
+    email: "",
+    games: ["THE FOREST"]
+  },
+  {
+    username: "b90ad379",
+    password: "ubfDfpBBAA",
+    email: "",
+    games: ["Dying Light"]
+  },
+  {
+    username: "negovoragenrih1991",
+    password: "R5zC3fJlCP8gvdvVn9UB",
+    email: "",
+    games: ["Resident Evil 4", "Resident Evil 5", "Resident Evil 6"]
+  },
+  {
+    username: "vcur89072",
+    password: "Z05dipingZ05",
+    email: "",
+    games: ["FORZA HORIZON 5"]
+  },
+  {
+    username: "syd86887",
+    password: "chengyu456tkk",
+    email: "",
+    games: ["Sifu"]
+  },
+  {
+    username: "gvozxoyd",
+    password: "huanxiang9981",
+    email: "",
+    games: ["Cyberpunk 2077"]
+  },
+  {
+    username: "toryanyk16",
+    password: "samsung29",
+    email: "",
+    games: ["Mafia II", "Mafia II: Definitive Edition"]
+  },
+  {
+    username: "viw90778",
+    password: "xpy52228",
+    email: "",
+    games: ["Batman: Arkham Trilogy"]
+  },
+  {
+    username: "ao03620",
+    password: "Hh2468bbu",
+    email: "",
+    games: ["Cyberpunk 2077", "Phantom Liberty"]
+  },
+  {
+    username: "53147390",
+    password: "23298610",
+    email: "",
+    games: ["Ride 5"]
+  },
+  {
+    username: "sunyijian1997",
+    password: "sunyijian199",
+    email: "",
+    games: ["Forza Horizon 5 (FULL DLC)"]
+  },
+  {
+    username: "brad6926",
+    password: "Changit7691",
+    email: "",
+    games: ["Grand Theft Auto 5", "Terraria", "Wallpaper Engine"]
+  },
+  {
+    username: "enyugame2913",
+    password: "enyugame8578",
+    email: "",
+    games: ["Red Dead Redemption 2"]
+  },
+  {
+    username: "kimbarker2v",
+    password: "0AoiUnxrFb1994",
+    email: "",
+    games: ["GTA THE TRILOGY DEFINITIVE EDITION"]
+  },
+  {
+    username: "panda119347",
+    password: "huanxiang9938",
+    email: "",
+    games: ["RESIDENT EVIL 7"]
+  },
+  {
+    username: "firmanyukjozefina91",
+    password: "vrcEeE4LEpN",
+    email: "",
+    games: ["Dying Light 2"]
+  },
+  {
+    username: "6684035552",
+    password: "85350288",
+    email: "",
+    games: ["The Last of Us Part I"]
+  },
+  {
+    username: "sqci120",
+    password: "1370960774zxcZ",
+    email: "",
+    games: ["Microsoft Flight Simulator"]
+  },
+  {
+    username: "lmyg25467",
+    password: "N0yOQYjBjUVv",
+    email: "",
+    games: ["Internet Cafe Simulator", "Internet Cafe Simulator 2"]
+  },
+  {
+    username: "40G4AC34B99",
+    password: "YR813MF299",
+    email: "",
+    games: ["Devil May Cry 5"]
+  }
+];
+
+function createAccountCard(account) {
+  const card = document.createElement('div');
+  card.className = 'account-card';
+  
+  card.innerHTML = `
+    <div class="account-info">
+      <span class="account-label">اسم المستخدم:</span>
+      <div class="account-value">${account.username}</div>
+    </div>
+    
+    <div class="account-info">
+      <span class="account-label">كلمة المرور:</span>
+      <div class="account-value">${account.password}</div>
+    </div>
+    
+    <div class="account-info">
+      <span class="account-label">الألعاب المتوفرة:</span>
+      <div class="account-value games-list">${account.games.join(', ')}</div>
+    </div>
+    
+    <div class="button-group">
+      <button class="copy-btn" onclick="copyAccount('${account.username}', '${account.password}', '${account.games.join(', ')}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </svg>
+        نسخ
+      </button>
+      <a href="javascript:void(0)" class="steam-btn" onclick="loginToSteam('${account.username}', '${account.password}')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+          <path d="M12 6v6l5.2 3.1.8-1.2-4.5-2.7V6z"/>
+        </svg>
+        الدخول إلى ستيم
+      </a>
+    </div>
+  `;
+  
+  return card;
+}
+
+function copyAccount(username, password, games) {
+  const text = `Username: ${username}\nPassword: ${password}\nGames: ${games}`;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const message = document.getElementById('successMessage');
+    message.style.display = 'block';
+    
+    setTimeout(() => {
+      message.style.display = 'none';
+    }, 3000);
+  });
+}
+
+function refreshAccounts() {
+  const grid = document.getElementById('accountsGrid');
+  grid.innerHTML = '';
+  
+  steamAccounts.forEach(account => {
+    grid.appendChild(createAccountCard(account));
+  });
+}
+
+function loginToSteam(username, password) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://store.steampowered.com/login/';
+  form.target = '_blank';
+
+  const usernameInput = document.createElement('input');
+  usernameInput.type = 'hidden';
+  usernameInput.name = 'username';
+  usernameInput.value = username;
+
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'hidden';
+  passwordInput.name = 'password';
+  passwordInput.value = password;
+
+  form.appendChild(usernameInput);
+  form.appendChild(passwordInput);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
+// Initial load
+refreshAccounts();
+</script>
+
+</body>
+</html>
